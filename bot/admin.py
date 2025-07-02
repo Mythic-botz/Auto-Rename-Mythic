@@ -2,7 +2,11 @@
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import ADMINS, PREMIUM_LIMIT
+from config import Config
+ADMINS = Config.ADMINNS,
+PREMIUM_LIMIT = Config.PREMIUM_LIMIT
+
+
 from .database import (
     get_all_users, get_user_data, update_tokens,
     add_premium_user, remove_premium_user, is_premium_user
