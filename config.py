@@ -40,3 +40,6 @@ class Config:
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001234567890"))
     SUPPORT_CHAT = os.environ.get("SUPPORT_CHAT", "MythicSupport")
     CONTACT_DEV = os.environ.get("CONTACT_DEV", "MythicXBot")
+
+    # 🕓 Time (in seconds) to auto-delete messages like /leaderboard output (0 = don't delete)
+DELETE_DELAY = int(os.environ.get("DELETE_DELAY", 30))
