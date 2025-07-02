@@ -16,7 +16,7 @@ class Config:
     START_VIDEO_URL = os.environ.get("START_VIDEO_URL", "https://ar-hosting.pages.dev/1751352310217.mp4")
 
     # 🏷️ Premium Settings
-    PREMIUM_IDS = list(map(int, os.environ.get("PREMIUM_IDS", "").split()))
+    PREMIUM_IDS = list(map(int, os.environ.get("PREMIUM_IDS", "6617544956").split()))
     PREMIUM_LIMIT = int(os.environ.get("PREMIUM_LIMIT", 0))
 
     # 💰 Token System
