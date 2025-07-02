@@ -1,7 +1,8 @@
 # 📁 bot/premium.py
 
 from config import Config
-PREMIUM_IDS = Config.PREMIUM_IDS, ADMINS = Config.ADMINS
+PREMIUM_IDS = Config.PREMIUM_IDS
+ADMINS = Config.ADMINS
 from .database import get_user_data, save_user_data
 
 # 🔍 Check if user is Premium
