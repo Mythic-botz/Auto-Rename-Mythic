@@ -26,6 +26,12 @@ async def get_user_data(user_id: int) -> dict:
         "used_tokens": data.get("used_tokens", 0)
     }
 
+
+# ✅ Add to database.py
+async def save_user_data(user_id: int, data: dict):
+    await stats_col.update_one({"_id": user_id}, {"$set": data}, upsert=True)
+
+
 # 📥 Add or update user
 async def add_user(user_id: int):
     await users_col.update_one({"_id": user_id}, {"$setOnInsert": {"_id": user_id}}, upsert=True)
