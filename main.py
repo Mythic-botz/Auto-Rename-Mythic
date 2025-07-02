@@ -21,7 +21,4 @@ app = Client(
 # 🚀 Webhook Mode for Render
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 8080))  # 🌐 Render provides dynamic port
-    app.run(webhook=True,
-            listen="0.0.0.0",
-            port=PORT,
-            hostname="0.0.0.0")  # ✅ Required for Render hosting
+    app.run()  # ✅ Required for Render hosting
