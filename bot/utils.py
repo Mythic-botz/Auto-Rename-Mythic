@@ -6,13 +6,19 @@ from pyrogram.types import Message
 import time
 
 # 🧠 Format file size
-def get_file_size(size):
-    # 🔢 Convert bytes to human-readable size
-    for unit in ["B", "KB", "MB", "GB", "TB"]:
-        if size < 1024:
-            return f"{size:.2f} {unit}"
-        size /= 1024
-    return f"{size:.2f} PB"
+
+def format_file_size(size):
+    """
+    Convert file size from bytes to human-readable format 📦
+    """
+    if size < 1024:
+        return f"{size} B"
+    elif size < 1024 ** 2:
+        return f"{size / 1024:.2f} KB"
+    elif size < 1024 ** 3:
+        return f"{size / (1024 ** 2):.2f} MB"
+    else:
+        return f"{size / (1024 ** 3):.2f} GB"
 
 # 🖼️ Save thumbnail from a replied image
 async def save_thumbnail(message: Message):
