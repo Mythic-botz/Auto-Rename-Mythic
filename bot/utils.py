@@ -4,6 +4,40 @@ import os
 from PIL import Image
 from pyrogram.types import Message
 import time
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+
+# 🎛️ Build user settings buttons panel
+def get_settings_buttons(user: dict) -> InlineKeyboardMarkup:
+    rename_mode = user.get("rename_mode", "caption")
+    use_dump = user.get("use_dump", False)
+    sample_video = user.get("sample_video", False)
+    is_premium = user.get("is_premium", False)
+
+    # 🟢 Button states
+    mode_button = f"📄 Mode: {'Filename' if rename_mode == 'filename' else 'Caption'}"
+    dump_button = f"📥 Dump: {'On' if use_dump else 'Off'}"
+    sample_button = f"🎞️ Sample: {'On' if sample_video else 'Off'}"
+
+    # 🧷 Buttons for Premium users
+    buttons = [
+        [InlineKeyboardButton(mode_button, callback_data="toggle_mode")],
+    ]
+
+    if is_premium:
+        buttons.append([
+            InlineKeyboardButton(dump_button, callback_data="toggle_dump"),
+            InlineKeyboardButton(sample_button, callback_data="toggle_sample")
+        ])
+
+    # 🔙 Back button
+    buttons.append([
+        InlineKeyboardButton("🔙 Back", callback_data="settings_back")
+    ])
+
+    return InlineKeyboardMarkup(buttons)
+
+
 
 # 🧠 Format file size
 
