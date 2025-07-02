@@ -7,6 +7,7 @@ from pyrogram import Client, idle
 from pyrogram.errors import FloodWait
 from fastapi import FastAPI
 import uvicorn
+from bot import start, help, rename, token, admin, settings  # etc.
 
 from config import Config
 
@@ -46,3 +47,4 @@ if __name__ == "__main__":
     # 🧠 Run bot after server starts
     loop = asyncio.get_event_loop()
     loop.run_until_complete(start_bot())
+await app.start()
