@@ -3,7 +3,11 @@
 
 from pyrogram.types import Message
 from pyrogram import Client
-from config import FORCE_SUB_CHANNEL, FORCE_SUB_PIC, BOT_USERNAME
+from config import Config
+FORCE_SUB_CHANNEL = Config.FORCE_SUB_CHANNEL
+FORCE_SUB_PIC = Config.FORCE_SUB_PIC
+BOT_USERNAME = Config.BOT_USERNAME
+
 from pyrogram.errors import UserNotParticipant, ChannelPrivate, ChatAdminRequired
 
 # ✅ Check if user is subscribed to update channel
