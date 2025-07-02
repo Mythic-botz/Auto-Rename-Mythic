@@ -1,36 +1,14 @@
-class Txt:
-    START_TEXT = "f"""
-👋 𝐇𝐞𝐥𝐥𝐨 {user.mention},
+# bot/__init__.py
 
-🥷 I am your personal **Anime Auto Rename Bot**.
-🪄 Rename files, set thumbnails, track usage tokens & more!"  # Your existing start text
+# 🚀 Import all handlers to register them when the bot starts
+from . import start
+from . import help
+from . import rename
+from . import token
+from . import admin
+from . import settings
+from . import fscheck
+from . import premium
+from . import callback  # if you use callback buttons
 
-    FORCE_SUB_TEXT = "..."  # Your force sub text
-    # ✅ Add this new block below
-
-    HELP_TEXT = """
-🛠 **How to Use the Bot:**
-
-1️⃣ **Send a File**
-‣ Upload any document, video, or media you want to rename.
-
-2️⃣ **Reply with /rename**
-‣ After uploading, reply to the file with this command followed by the new filename.
-
-3️⃣ **Rename Modes**
-‣ Filename Mode: Renames based on filename.
-‣ Caption Mode: Renames based on the custom caption you set in settings.
-
-4️⃣ **Settings**
-‣ Use the ⚙️ Settings button to configure:
-   ┣ 🎞 Rename Mode
-   ┣ 🖼 Thumbnail
-   ┣ 🎬 Sample Clip (Premium only)
-   ┗ 🚀 Dump Mode (Premium only)
-
-5️⃣ **Limits**
-‣ Free Users: Limited renames/day.
-‣ Premium Users: Unlimited access + extra features.
-
-❓Need help? Contact support or check update channel.
-"""
+# ⚠️ Make sure to avoid emojis or raw text outside strings or comments.
