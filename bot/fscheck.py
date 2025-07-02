@@ -1,50 +1,40 @@
 # 📁 fscheck.py
-# 🚫 Force Subscribe Checker for Premium Auto Rename Bot
+# 📁 bot/fscheck.py
 
-from config import FORCE_SUB_CHANNEL
 from pyrogram.types import Message
-from pyrogram import Client, errors, enums
+from pyrogram import Client
+from config import FORCE_SUB_CHANNEL, FORCE_SUB_PIC, BOT_USERNAME
+from pyrogram.errors import UserNotParticipant, ChannelPrivate, ChatAdminRequired
 
-# ✅ Check if user is a member of the updates channel
-async def force_sub(client: Client, message: Message):
+# ✅ Check if user is subscribed to update channel
+async def force_sub(client: Client, message: Message) -> bool:
     if not FORCE_SUB_CHANNEL:
-        return True  # 🚫 No force sub configured
+        return True  # 🔓 No force sub set, skip
 
     try:
         user = await client.get_chat_member(FORCE_SUB_CHANNEL, message.from_user.id)
-        if user.status in [enums.ChatMemberStatus.BANNED, enums.ChatMemberStatus.RESTRICTED]:
-            return False  # ❌ User is banned or restricted
-        return True  # ✅ User is a member
-    except errors.UserNotParticipant:
-        return False  # ❌ User not joined
-    except errors.ChatAdminRequired:
-        return True  # ⚠️ Bot is not admin in force sub channel
-    except Exception:
-        return True  # ⚠️ Unknown error, allow access
-        
+        return user.status in ("member", "administrator", "creator")
+    except UserNotParticipant:
+        return False
+    except (ChannelPrivate, ChatAdminRequired):
+        return True  # 🔒 Skip force sub check if bot lacks access
 
-# 📤 Send Force Sub Message
+# ✉️ Send Force Sub message with button
 async def send_force_sub(message: Message):
-    from config import FORCE_SUB_TEXT, FORCE_SUB_PIC, UPDATES_CHANNEL
-    from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    buttons = [
+        [
+            message.reply_markup.inline_keyboard[0][0] if message.reply_markup else None,
+            {"text": "🔄 Refresh", "callback_data": "refreshfs"}
+        ]
+    ] if message.reply_markup else [
+        [
+            {"text": "📢 Join Channel", "url": f"https://t.me/{FORCE_SUB_CHANNEL}"},
+            {"text": "🔄 Refresh", "callback_data": "refreshfs"}
+        ]
+    ]
 
-    try:
-        if FORCE_SUB_PIC:
-            await message.reply_photo(
-                photo=FORCE_SUB_PIC,
-                caption=FORCE_SUB_TEXT.format(channel=UPDATES_CHANNEL),
-                reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("📢 Join Updates Channel", url=f"https://t.me/{UPDATES_CHANNEL}")]
-                ]),
-                quote=True
-            )
-        else:
-            await message.reply(
-                text=FORCE_SUB_TEXT.format(channel=UPDATES_CHANNEL),
-                reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("📢 Join Updates Channel", url=f"https://t.me/{UPDATES_CHANNEL}")]
-                ]),
-                quote=True
-            )
-    except Exception as e:
-        print(f"Error sending force sub message: {e}")  # ⚠️ Debug log for force sub error
+    await message.reply_photo(
+        photo=FORCE_SUB_PIC,
+        caption=f"**📛 You must join @{FORCE_SUB_CHANNEL} to use this bot.**\n\nClick the button below to join and then press 'Refresh'.",
+        reply_markup={"inline_keyboard": buttons}
+    )
