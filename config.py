@@ -35,7 +35,7 @@ class Config:
 
     # 🗃️ Database
     DB_NAME = os.environ.get("DB_NAME", "Rename")  # MongoDB database name
-    MONGO_URI = os.environ.get("MONGO_URI", "")   # 🔥 ADD THIS LINE for MongoDB URI
+    MONGO_URL = os.environ.get("MONGO_URL", "")   # 🔥 ADD THIS LINE for MongoDB URI
 
     # 🔧 Misc
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001234567890"))
