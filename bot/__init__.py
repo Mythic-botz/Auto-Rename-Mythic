@@ -1,5 +1,10 @@
 class Txt:
-    START_TEXT = "..."  # Your existing start text
+    START_TEXT = "f"""
+👋 𝐇𝐞𝐥𝐥𝐨 {user.mention},
+
+🥷 I am your personal **Anime Auto Rename Bot**.
+🪄 Rename files, set thumbnails, track usage tokens & more!"  # Your existing start text
+
     FORCE_SUB_TEXT = "..."  # Your force sub text
     # ✅ Add this new block below
 
