@@ -6,7 +6,7 @@ from pyrogram.types import CallbackQuery
 from config import Config 
 ADMINS = Config.ADMINS
 DELETE_DELAY = Config.DELETE_DELAY
-from bot.database import get_user, update_settings
+from bot.database import get_user, update_setting
 from bot.utils import get_settings_buttons
 
 # 🚫 Cancel button handler (e.g., "cancel_rename" button)
