@@ -8,7 +8,7 @@ from pyrogram.errors import FloodWait
 from fastapi import FastAPI
 import uvicorn
 
-from config import API_ID, API_HASH, BOT_TOKEN
+from config import Config
 
 app = Client(
     "AutoRenameBot",
