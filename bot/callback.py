@@ -5,7 +5,7 @@ from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery
 from config import Config 
 ADMINS = Config.ADMINS
-DELETE_DELAY = DELETE_DELAY
+DELETE_DELAY = Config.DELETE_DELAY
 from bot.database import get_user, update_settings
 from bot.utils import get_settings_buttons
 
