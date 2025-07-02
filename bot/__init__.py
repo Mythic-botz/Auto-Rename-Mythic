@@ -2,7 +2,7 @@
 
 # 🚀 Import all handlers to register them when the bot starts
 from . import start
-from . import help
+from . import help_cmd
 from . import rename
 from . import token
 from . import admin
