@@ -12,6 +12,14 @@ tokens_col = db["tokens"]
 stats_col = db["stats"]
 
 
+# ✅ Get all user IDs (used in /broadcast and /leaderboard)
+async def get_all_users():
+    users = []
+    async for doc in db.users.find({}, {"_id": 1}):
+        users.append(doc["_id"])
+    return users
+
+
 # 📥 Add or update user
 async def add_user(user_id: int):
     await users_col.update_one({"_id": user_id}, {"$setOnInsert": {"_id": user_id}}, upsert=True)
