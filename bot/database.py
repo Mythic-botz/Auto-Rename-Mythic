@@ -20,6 +20,15 @@ async def get_all_users():
     return users
 
 
+# 📊 Get stats data for a user (rename count and usage)
+async def get_user_data(user_id: int) -> dict:
+    data = await stats_col.find_one({"_id": user_id}) or {}
+    return {
+        "total_renamed": data.get("total_renamed", 0),
+        "used_tokens": data.get("used_tokens", 0)
+    }
+
+
 # 📥 Add or update user
 async def add_user(user_id: int):
     await users_col.update_one({"_id": user_id}, {"$setOnInsert": {"_id": user_id}}, upsert=True)
