@@ -2,7 +2,12 @@
 
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from config import START_PIC_URL, START_VIDEO_URL, SUPPORT_CHAT, CONTACT_DEV
+from config import Config
+START_PIC_URL = Config.START_PIC_URL
+START_VIDEO_URL = Config.START_VIDEO_URL
+SUPPORT_CHAT = Config.SUPPORT_CHAT
+CONTACT_DEV = Config.CONTACT_DEV
+
 from .fscheck import force_sub, send_force_sub
 from .premium import is_premium_user
 
