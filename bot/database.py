@@ -11,6 +11,12 @@ settings_col = db["settings"]
 tokens_col = db["tokens"]
 stats_col = db["stats"]
 
+
+# ✅ Get user settings
+async def get_user(user_id):
+    return await db.users.find_one({"_id": user_id})
+
+
 # ✅ Get all user IDs (used in /broadcast and /leaderboard)
 async def get_all_users():
     users = []
