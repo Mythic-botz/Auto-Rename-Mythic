@@ -34,12 +34,13 @@ class Config:
     BOT_LANG = os.environ.get("BOT_LANG", "EN")
 
     # 🗃️ Database
-    DB_NAME = os.environ.get("DB_NAME", "animebot.db")  # SQLite file
+    DB_NAME = os.environ.get("DB_NAME", "Rename")  # MongoDB database name
+    MONGO_URI = os.environ.get("MONGO_URI", "")   # 🔥 ADD THIS LINE for MongoDB URI
 
     # 🔧 Misc
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001234567890"))
     SUPPORT_CHAT = os.environ.get("SUPPORT_CHAT", "MythicSupport")
     CONTACT_DEV = os.environ.get("CONTACT_DEV", "MythicXBot")
 
-    # 🕓 Time (in seconds) to auto-delete messages like /leaderboard output (0 = don't delete)
-DELETE_DELAY = int(os.environ.get("DELETE_DELAY", 30))
+    # 🕓 Auto delete time (in seconds) for things like /leaderboard
+    DELETE_DELAY = int(os.environ.get("DELETE_DELAY", 30))
