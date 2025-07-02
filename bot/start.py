@@ -1,50 +1,56 @@
-from pyrogram import filters, Client
+# 📁 bot/start.py
+
+from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from config import START_PIC_URL, START_VIDEO_URL, UPDATES_CHANNEL, BOT_USERNAME
-from bot.fscheck import force_sub_check
-from bot.database import is_premium
-import random
+from config import START_PIC_URL, START_VIDEO_URL, SUPPORT_CHAT, CONTACT_DEV
+from .fscheck import force_sub, send_force_sub
+from .premium import is_premium_user
 
-# 🎬 Emoji button layout
-START_BUTTONS = InlineKeyboardMarkup([
-    [InlineKeyboardButton("💡 Help", callback_data="help"),
-     InlineKeyboardButton("⚙️ Settings", callback_data="settings")],
-    [InlineKeyboardButton("💎 Buy Token", callback_data="buy_token")],
-    [InlineKeyboardButton("📢 Updates", url=f"https://t.me/{UPDATES_CHANNEL}")]
-])
+# 🎀 Inline button layout with emojis (Anya Style)
+def start_panel():
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("📚 Help", callback_data="help_callback")],
+        [InlineKeyboardButton("⚙️ Settings", callback_data="settings_callback")],
+        [
+            InlineKeyboardButton("💠 My Tokens", callback_data="token_status"),
+            InlineKeyboardButton("💎 Buy Premium", url=f"https://t.me/{CONTACT_DEV}")
+        ],
+        [InlineKeyboardButton("👥 Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+    ])
 
-# 🚀 /start command handler
+# 🚀 Start command handler
 @Client.on_message(filters.command("start") & filters.private)
 async def start_cmd(client: Client, message: Message):
     user = message.from_user
 
-    # 🔒 Force subscribe check
-    if UPDATES_CHANNEL:
-        fsub = await force_sub_check(client, message)
-        if fsub:
-            return
+    # 📛 Force Subscription Check
+    if not await force_sub(client, message):
+        return await send_force_sub(message)
 
-    # 💎 Check if user is premium
-    premium = await is_premium(user.id)
+    # 💠 Premium check
+    is_premium = await is_premium_user(user.id)
 
-    caption = f"👋 Hello {user.mention},\n\nWelcome to **Premium Auto Rename Bot**!\n\nUse this bot to rename your files with cool features like sample video, thumbnails, dump logging, and more!"
+    # 🎥 Send Video to Premium / Image to Free Users
+    caption = f"""
+👋 𝐇𝐞𝐥𝐥𝐨 {user.mention},
 
-    if premium:
-        try:
-            await message.reply_video(
-                video=START_VIDEO_URL,
-                caption=caption,
-                reply_markup=START_BUTTONS
-            )
-        except Exception:
-            await message.reply_photo(
-                photo=START_PIC_URL,
-                caption=caption,
-                reply_markup=START_BUTTONS
-            )
+🥷 I am your personal **Anime Auto Rename Bot**.
+🪄 Rename files, set thumbnails, track usage tokens & more!
+
+🔰 Free users: {user.id}
+💎 Premium: {"✅" if is_premium else "❌"}
+"""
+    if is_premium:
+        await client.send_video(
+            chat_id=message.chat.id,
+            video=START_VIDEO_URL,
+            caption=caption,
+            reply_markup=start_panel()
+        )
     else:
-        await message.reply_photo(
+        await client.send_photo(
+            chat_id=message.chat.id,
             photo=START_PIC_URL,
             caption=caption,
-            reply_markup=START_BUTTONS
+            reply_markup=start_panel()
         )
