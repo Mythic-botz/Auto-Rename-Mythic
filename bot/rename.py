@@ -1,88 +1,87 @@
-# 📁 rename.py
-# 🔁 Handle rename command and file replies
+# 📁 bot/rename.py
+# 🔁 Rename file by replying with `/rename NewName.ext`
 
-from pyrogram import Client, filters, enums
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from config import DUMP_CHANNEL, FREE_TOKENS, TOKEN_RESET_LIMIT
-from bot.fscheck import force_sub, send_force_sub
-from bot.database import (
-    get_user_data, update_user_tokens,
-    is_premium_user
-)
-from bot.utils import (
-    save_thumbnail, delete_thumbnail,
-    format_size, generate_sample_clip, take_screenshot
-)
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from config import DELETE_DELAY, DUMP_CHANNEL
+from .fscheck import force_sub, send_force_sub
+from .utils import get_file_size
+from .database import get_user_data, update_usage, is_premium_user
+from .settings import get_settings
 
-# 🖼 Handle media reply for rename
-@Client.on_message(filters.private & filters.reply & filters.media)
-async def reply_media_handler(client: Client, message: Message):
-    # 🛡 Check force sub first
+import os
+
+@Client.on_message(filters.command("rename") & filters.private)
+async def rename_file(client: Client, message: Message):
+    # 🔐 Force subscribe
     if not await force_sub(client, message):
-        await send_force_sub(message)
-        return
+        return await send_force_sub(message)
 
+    # ⚠️ Must reply to a media file
+    if not message.reply_to_message or not message.reply_to_message.media:
+        return await message.reply("❗ Please reply to a file to rename it!")
+
+    # 📝 Extract new file name
+    if len(message.command) < 2:
+        return await message.reply("❗ Usage: `/rename NewFileName.ext`", quote=True)
+
+    new_name = message.text.split(" ", 1)[1]
     user_id = message.from_user.id
-    user_data = await get_user_data(user_id)
-    premium = await is_premium_user(user_id)
 
-    # 🧪 Token check (free users only)
-    if not premium:
+    # 🔁 Check user data and settings
+    user_data = await get_user_data(user_id)
+    settings = await get_settings(user_id)
+    is_premium = await is_premium_user(user_id)
+
+    # 🧪 Free user token check
+    if not is_premium:
         tokens = user_data.get("tokens", 0)
         if tokens <= 0:
-            await message.reply_text("🪙 You’ve used all your rename tokens for today!\n\n🕛 Try again after some time or upgrade to Premium for unlimited usage.")
-            return
+            return await message.reply("🪙 You’ve used all your rename tokens for today!\n\nUpgrade to Premium for unlimited access.")
 
-    # 💾 Store original media
-    media = message.document or message.video or message.audio
-    if not media:
-        await message.reply_text("❗Unsupported media type.")
-        return
+    # 📦 Get media file
+    media = message.reply_to_message
+    file = getattr(media, media.media.value, None)
+    if not file or not file.file_id:
+        return await message.reply("❌ Failed to read media file.")
 
-    # 📎 Save details for later use
-    file_id = media.file_id
-    file_name = media.file_name or "Renamed_File"
-    file_size = media.file_size
-    mime_type = media.mime_type or "application/octet-stream"
-
-    # 📤 Dump to universal channel (if enabled)
-    if user_data.get("use_dump") and DUMP_CHANNEL:
+    # 📤 Dump to universal dump channel
+    if settings.get("use_dump") and DUMP_CHANNEL:
         try:
-            await client.send_cached_media(DUMP_CHANNEL, file_id, caption=f"#DUMPED_BY: `{user_id}`\n📁 **File:** `{file_name}`")
+            await client.send_cached_media(DUMP_CHANNEL, file.file_id, caption=f"#DUMPED_BY: `{user_id}`\n📁 `{new_name}`")
         except Exception as e:
-            print(f"❗ Dump failed: {e}")
+            print(f"[DUMP FAIL] {e}")
 
-    # ✅ Prepare Rename Caption
-    rename_mode = user_data.get("rename_mode", "caption")  # 'caption' or 'filename'
-    if rename_mode == "caption":
-        prompt = "✏️ Send me new caption for the file."
-    else:
-        prompt = "📂 Send new file name with extension (e.g., `MyVideo.mp4`)."
+    # 📥 Download original
+    sent_msg = await message.reply("📥 Downloading...")
+    d_path = await client.download_media(media, file_name="temp/")
+    if not os.path.exists(d_path):
+        return await sent_msg.edit("⚠️ Download failed.")
 
-    # 💡 Ask user for next step
-    await message.reply_text(
-        f"{prompt}\n\n⚠️ Renaming will consume 1 token.",
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("❌ Cancel", callback_data="cancel_rename")]
-        ])
-    )
+    # 🪄 Rename file
+    new_path = f"temp/{new_name}"
+    os.rename(d_path, new_path)
 
-    # 🧠 Store file details in memory (alternatively use DB/temp if needed)
-    client.rename_cache[user_id] = {
-        "file_id": file_id,
-        "file_name": file_name,
-        "file_size": file_size,
-        "mime_type": mime_type,
-        "mode": rename_mode,
-        "thumb": user_data.get("thumbnail"),
-        "sample": user_data.get("sample_video"),
-        "screenshot": user_data.get("screenshot"),
-        "premium": premium
-    }
+    # 📤 Upload renamed file
+    await sent_msg.edit("📤 Uploading...")
 
-# ✍️ Handle /rename command
-@Client.on_message(filters.private & filters.command("rename"))
-async def rename_command_handler(client: Client, message: Message):
-    await message.reply_text(
-        "🔁 To rename a file:\n1️⃣ Send any video/file.\n2️⃣ I'll ask for new name or caption.\n3️⃣ Renamed file will be sent back.\n\n💡 Premium users get sample clips & no token limits!"
-    )
+    try:
+        caption = new_name if settings.get("rename_mode") == "filename" else media.caption or new_name
+        thumb = settings.get("thumbnail")
+        await message.reply_document(
+            document=new_path,
+            caption=caption,
+            thumb=thumb,
+            quote=True
+        )
+    except Exception as e:
+        await message.reply(f"⚠️ Upload failed:\n`{e}`")
+
+    # 🧹 Clean up
+    await sent_msg.delete()
+    os.remove(new_path)
+    await update_usage(user_id)
+
+    # ⏳ Auto delete
+    if DELETE_DELAY:
+        await message.delete()
