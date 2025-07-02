@@ -3,7 +3,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from config import Config
-ADMINS = Config.ADMINNS,
+ADMINS = Config.ADMINS,
 PREMIUM_LIMIT = Config.PREMIUM_LIMIT
 
 
