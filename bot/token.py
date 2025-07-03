@@ -2,7 +2,7 @@
 # 🔐 Token System to manage Free & Premium user limits
 
 from config import Config 
-FREE_TOKENS = Config.FREE_TOKENS
+FREE_TOKENS = Config.DEFAULT_TOKENS
 TOKEN_RESET_LIMIT = Config.TOKEN_RESET_LIMIT
 from bot.database import get_user_data, update_user_tokens, is_premium_user
 from pyrogram.types import Message
