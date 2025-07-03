@@ -4,7 +4,7 @@ class Config:
     # ⚙️ Basic Bot Settings
     API_ID = int(os.environ.get("API_ID", "23476863"))
     API_HASH = os.environ.get("API_HASH", "69daa0835439c4211f34c2e9ad0acb5c")
-    BOT_TOKEN = os.environ.get("BOT_TOKEN", "7691475152:AAGOLa_hgm8RC73NKepmORPofcqp_P12v58")
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", "7662888624:AAFvZo4r6bUrYHEKkZ8KkuRvY3pqYUMqjls")
     BOT_USERNAME = os.environ.get("BOT_USERNAME", "AizenRenameBot")
 
     # 📢 Force Sub Channel
