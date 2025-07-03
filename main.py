@@ -1,54 +1,48 @@
-# main.py
+# main.py ✅ Final Render-Compatible Version
 
 import os
 import asyncio
-import threading
 from pyrogram import Client, idle
-from pyrogram.errors import FloodWait
 from fastapi import FastAPI
 import uvicorn
-from bot import start, help_cmd, rename, token, admin, settings  # etc.
-
 from config import Config
-app = Client(
+
+# ✅ Pyrogram Bot App
+bot = Client(
     "AutoRenameBot",
     api_id=Config.API_ID,
     api_hash=Config.API_HASH,
     bot_token=Config.BOT_TOKEN,
+    plugins=dict(root="bot")
 )
 
-
-
-# ✅ Import all your handlers here so they are registered before app.start()
-import bot.start
-import bot.help_cmd
-import bot.rename
-import bot.token
-import bot.settings
-import bot.admin
-import bot.anime
-
-# 🌐 Dummy FastAPI app for keeping Render alive
+# ✅ FastAPI dummy app to keep Render alive
 web = FastAPI()
 
 @web.get("/")
 async def root():
     return {"status": "Auto Rename Bot is running 🎉"}
 
-# ✅ Start bot async function
-async def start_bot():
-    print("🤖 Starting bot...")
-    await app.start()
-    print("✅ Bot started.")
+# ✅ Async entry point that starts both FastAPI and bot
+async def start_services():
+    print("🤖 Starting Bot...")
+    await bot.start()
+    print("✅ Bot is now running.")
     await idle()
+    await bot.stop()
+    print("🛑 Bot stopped.")
 
-# ✅ Entry point
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 10000))
 
-    # Start the FastAPI + Bot together
+    # Start both FastAPI and bot in same loop
     loop = asyncio.get_event_loop()
-    loop.create_task(start_bot())  # background bot task
 
-    # Start web server (won't block the bot)
+    # 🔁 Run both bot and FastAPI together
+    def run():
+        loop.run_until_complete(start_services())
+
+    import threading
+    threading.Thread(target=run).start()
+
     uvicorn.run(web, host="0.0.0.0", port=port)
