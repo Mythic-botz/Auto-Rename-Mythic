@@ -6,7 +6,7 @@ from config import Config
 DELETE_DELAY = Config.DELETE_DELAY
 
 from .fscheck import force_sub, send_force_sub
-from .utils import get_file_size
+from .utils import format_file_size as get_file_size
 from .database import update_usage, get_user_data
 from .settings import get_settings
 
