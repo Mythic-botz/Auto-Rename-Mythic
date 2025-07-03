@@ -33,4 +33,4 @@ async def toggle_setting(user_id: int, key: str) -> str:
     current_value = user_settings.get(key, False)
     new_value = not current_value
     collection.update_one({"_id": user_id}, {"$set": {key: new_value}}, upsert=True)
-    return f"{'✅ Enabled' if new_value else '❌ Disabled'} {key}
+    return f"{'✅ Enabled' if new_value else '❌ Disabled'} {key}"
