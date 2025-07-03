@@ -21,7 +21,7 @@ app = Client(
 
 # ✅ Import all your handlers here so they are registered before app.start()
 import bot.start
-import bot.help
+import bot.help_cmd
 import bot.rename
 import bot.token
 import bot.settings
