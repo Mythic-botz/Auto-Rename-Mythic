@@ -1,4 +1,4 @@
-# main.py ✅ Final Render-Compatible Version
+# main.py ✅ FINAL WORKING RENDER VERSION
 
 import os
 import asyncio
@@ -7,8 +7,8 @@ from fastapi import FastAPI
 import uvicorn
 from config import Config
 
-# ✅ Pyrogram Bot App
-bot = Client(
+# ✅ Initialize Pyrogram Client
+app = Client(
     "AutoRenameBot",
     api_id=Config.API_ID,
     api_hash=Config.API_HASH,
@@ -16,33 +16,29 @@ bot = Client(
     plugins=dict(root="bot")
 )
 
-# ✅ FastAPI dummy app to keep Render alive
+# ✅ FastAPI dummy app
 web = FastAPI()
 
 @web.get("/")
 async def root():
     return {"status": "Auto Rename Bot is running 🎉"}
 
-# ✅ Async entry point that starts both FastAPI and bot
-async def start_services():
-    print("🤖 Starting Bot...")
-    await bot.start()
-    print("✅ Bot is now running.")
-    await idle()
-    await bot.stop()
+# ✅ Start FastAPI server (non-blocking)
+async def start_web():
+    config = uvicorn.Config(web, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)), log_level="info")
+    server = uvicorn.Server(config)
+    await server.serve()
+
+# ✅ Combined startup
+async def main():
+    print("🤖 Starting Bot and FastAPI...")
+    await app.start()
+    await asyncio.gather(
+        idle(),        # Wait for bot
+        start_web(),   # Wait for FastAPI
+    )
+    await app.stop()
     print("🛑 Bot stopped.")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-
-    # Start both FastAPI and bot in same loop
-    loop = asyncio.get_event_loop()
-
-    # 🔁 Run both bot and FastAPI together
-    def run():
-        loop.run_until_complete(start_services())
-
-    import threading
-    threading.Thread(target=run).start()
-
-    uvicorn.run(web, host="0.0.0.0", port=port)
+    asyncio.run(main())
