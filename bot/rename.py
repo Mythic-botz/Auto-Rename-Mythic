@@ -2,7 +2,9 @@
 
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from config import DELETE_DELAY
+from config import Config 
+DELETE_DELAY = Config.DELETE_DELAY
+
 from .fscheck import force_sub, send_force_sub
 from .utils import get_file_size
 from .database import update_usage, get_user_data
