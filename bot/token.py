@@ -3,7 +3,7 @@
 
 from config import Config 
 FREE_TOKENS = Config.DEFAULT_TOKENS
-TOKEN_RESET_LIMIT = Config.TOKEN_RESET_LIMIT
+TOKEN_RESET_LIMIT = Config.TOKEN_RESET_HOURS
 from bot.database import get_user_data, update_user_tokens, is_premium_user
 from pyrogram.types import Message
 
