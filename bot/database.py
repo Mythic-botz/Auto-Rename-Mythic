@@ -95,3 +95,11 @@ async def is_premium_user(user_id: int) -> bool:
 # 🔁 Update tokens manually (admin use)
 async def update_tokens(user_id: int, tokens: int):
     await tokens_col.update_one({"_id": user_id}, {"$set": {"tokens": tokens}}, upsert=True)
+
+# ✅ Update user's token count
+async def update_user_tokens(user_id: int, tokens: int):
+    await users_collection.update_one(
+        {"_id": user_id},
+        {"$set": {"tokens": tokens}},
+        upsert=True
+    )
