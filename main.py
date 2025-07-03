@@ -7,7 +7,7 @@ from pyrogram import Client, idle
 from pyrogram.errors import FloodWait
 from fastapi import FastAPI
 import uvicorn
-from bot import start, help, rename, token, admin, settings  # etc.
+from bot import start, help_cmd, rename, token, admin, settings  # etc.
 
 from config import Config
 app = Client(
