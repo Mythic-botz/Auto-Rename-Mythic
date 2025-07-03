@@ -1,7 +1,7 @@
 # 📁 bot/settings.py
 
 from pymongo import MongoClient
-from config import = Config 
+from config import Config 
 MONGO_URL = Config.MONGO_URL
 from .premium import is_premium_user
 
