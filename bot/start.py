@@ -23,39 +23,64 @@ def start_panel():
         [InlineKeyboardButton("👥 Support", url=f"https://t.me/{SUPPORT_CHAT}")]
     ])
 
-# 🚀 Start command handler
+)
+
+# Modified start command with debugging
 @Client.on_message(filters.command("start") & filters.private)
 async def start_cmd(client: Client, message: Message):
-    user = message.from_user
+    logger.info(f"🔥 START command received from user: {message.from_user.id}")
+    
+    try:
+        user = message.from_user
+        logger.info(f"👤 User details: {user.first_name} (@{user.username})")
 
-    # 📛 Force Subscription Check
-    if not await force_sub(client, message):
-        return await send_force_sub(message)
+        # 📛 Force Subscription Check
+        logger.info("🔍 Checking force subscription...")
+        if not await force_sub(client, message):
+            logger.info("❌ Force sub check failed, sending force sub message")
+            return await send_force_sub(message)
 
-    # 💠 Premium check
-    is_premium = await is_premium_user(user.id)
+        logger.info("✅ Force sub check passed")
 
-    # 🎥 Send Video to Premium / Image to Free Users
-    caption = f"""
+        # 💠 Premium check
+        logger.info("💎 Checking premium status...")
+        is_premium = await is_premium_user(user.id)
+        logger.info(f"💎 Premium status: {is_premium}")
+
+        # 🎥 Send Video to Premium / Image to Free Users
+        caption = f"""
 👋 𝐇𝐞𝐥𝐥𝐨 {user.mention},
 
-🥷 I am your personal **Anime Auto Rename Bot**.
+🥷 I am your personal Anime Auto Rename Bot.
 🪄 Rename files, set thumbnails, track usage tokens & more!
 
 🔰 Free users: {user.id}
 💎 Premium: {"✅" if is_premium else "❌"}
 """
-    if is_premium:
-        await client.send_video(
-            chat_id=message.chat.id,
-            video=START_VIDEO_URL,
-            caption=caption,
-            reply_markup=start_panel()
-        )
-    else:
-        await client.send_photo(
-            chat_id=message.chat.id,
-            photo=START_PIC_URL,
-            caption=caption,
-            reply_markup=start_panel()
-        )
+        
+        logger.info("📤 Sending response message...")
+        if is_premium:
+            await client.send_video(
+                chat_id=message.chat.id,
+                video=START_VIDEO_URL,
+                caption=caption,
+                reply_markup=start_panel()
+            )
+            logger.info("✅ Video sent to premium user")
+        else:
+            await client.send_photo(
+                chat_id=message.chat.id,
+                photo=START_PIC_URL,
+                caption=caption,
+                reply_markup=start_panel()
+            )
+            logger.info("✅ Photo sent to free user")
+            
+    except Exception as e:
+        logger.error(f"❌ Error in start_cmd: {str(e)}")
+        logger.exception("Full traceback:")
+        # Send error message to user
+        try:
+            await message.reply_text("❌ An error occurred. Please try again later.")
+        except:
+            pass
