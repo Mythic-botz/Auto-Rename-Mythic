@@ -23,7 +23,7 @@ def start_panel():
         [InlineKeyboardButton("👥 Support", url=f"https://t.me/{SUPPORT_CHAT}")]
     ])
 
-)
+
 
 # Modified start command with debugging
 @Client.on_message(filters.command("start") & filters.private)
